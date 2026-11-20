@@ -99,46 +99,11 @@ let timer;
 let audioContext;
 
 function makeScream() {
-  try {
-    audioContext = new (
-      window.AudioContext || window.webkitAudioContext
-    )();
-
-    const now = audioContext.currentTime;
-
-    // Layered horror sound
-    [0, 1, 2].forEach((layer) => {
-      const osc = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-
-      osc.type = layer === 0 ? "sawtooth" : "triangle";
-
-      const startFreq = [650, 900, 1200][layer];
-
-      osc.frequency.setValueAtTime(startFreq, now);
-      osc.frequency.exponentialRampToValueAtTime(
-        180 + layer * 30, now + 1.8
-      );
-
-      osc.frequency.linearRampToValueAtTime(
-        500 + layer * 100, now + 2.1
-      );
-
-      gain.gain.setValueAtTime(0.035, now);
-      gain.gain.exponentialRampToValueAtTime(
-        0.001, now + 2.3
-      );
-
-      osc.connect(gain);
-      gain.connect(audioContext.destination);
-
-      osc.start(now);
-      osc.stop(now + 2.3);
-    });
-
-  } catch (e) {
-    console.log("Audio unavailable");
-  }
+  const scream = new Audio("scream.mp3");
+  scream.volume = 1;
+  scream.play().catch(error => {
+    console.log("Audio playback failed:", error);
+  });
 }
 
 function jumpscare() {
