@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welcome</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f5f7;
+  color: #333;
+  overflow: hidden;
+}
+
+#normal {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 20px;
+}
+
+#normal h1 {
+  font-size: 30px;
+  font-weight: 500;
+}
+
+#normal p {
+  color: #777;
+}
+
+#scare {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 10;
+  overflow: hidden;
+  animation: flash .12s;
+}
+
+.ghost {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse, #252525, #000 75%);
+}
+
+.girl {
+  position: absolute;
+  width: 350px;
+  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg, #080808, #aaa, #333, #050505
+  );
+  clip-path: polygon(25% 0, 75% 0, 100% 100%, 0 100%);
+}
+
+.head {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 270px;
+  height: 350px;
+  border-radius: 48%;
+  background: #b8b8b8;
+  box-shadow: 0 0 50px #777;
+}
+
+.hair {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 310px;
+  height: 85%;
+  background: #030303;
+  border-radius: 50% 50% 15% 15%;
+  z-index: 2;
+  box-shadow: -35px 0 20px #000, 35px 0 20px #000;
+}
+
+.strand {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 35px;
+  background: #080808;
+  border-radius: 50%;
+}
+
+.strand:nth-child(2) { left: 35px; }
+.strand:nth-child(3) { left: 85px; }
+.strand:nth-child(4) { left: 145px; }
+.strand:nth-child(5) { left: 205px; }
+.strand:nth-child(6) { left: 255px; }
+
+.eye {
+  position: absolute;
+  top: 130px;
+  width: 35px;
+  height: 50px;
+  background: black;
+  z-index: 1;
+}
+
+.eye.one { left: 55px; }
+.eye.two { right: 55px; }
+
+.mouth {
+  position: absolute;
+  top: 230px;
+  left: 105px;
+  width: 60px;
+  height: 90px;
+  background: #090000;
+  border-radius: 50%;
+}
+
+#replay {
+  display: none;
+  position: fixed;
+  z-index: 20;
+  bottom: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #050505;
+  color: white;
+  border: 1px solid white;
+  padding: 14px 30px;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+@keyframes flash {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+</style>
+</head>
+
+<body>
+
+<div id="normal">
+  <h1>Hello!</h1>
+  <p>Welcome. Hope you're having a good day.</p>
+  <p>Have a look around.</p>
+</div>
+
+<div id="scare">
+  <div class="ghost">
+    <div class="girl">
+      <div class="head">
+        <div class="eye one"></div>
+        <div class="eye two"></div>
+        <div class="mouth"></div>
+      </div>
+
+      <div class="hair">
+        <div class="strand"></div>
+        <div class="strand"></div>
+        <div class="strand"></div>
+        <div class="strand"></div>
+        <div class="strand"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button id="replay" onclick="restart()">Try again</button>
+
+<script>
+let audioContext;
+let timer;
+
+function scream() {
+  try {
+    audioContext = new (
+      window.AudioContext || window.webkitAudioContext
+    )();
+
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    osc.type = "sawtooth";
+
+    osc.frequency.setValueAtTime(
+      950, audioContext.currentTime
+    );
+
+    osc.frequency.exponentialRampToValueAtTime(
+      120, audioContext.currentTime + 1.4
+    );
+
+    gain.gain.setValueAtTime(
+      0.13, audioContext.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.001, audioContext.currentTime + 1.5
+    );
+
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+
+    osc.start();
+    osc.stop(audioContext.currentTime + 1.5);
+
+  } catch (e) {
+    console.log("Audio unavailable");
+  }
+}
+
+let triggered = false;
+
+function jumpscare() {
+  if (triggered) return;
+  triggered = true;
+
+  clearTimeout(timer);
+
+  document.getElementById("normal").style.display = "none";
+  document.getElementById("scare").style.display = "block";
+
+  scream();
+
+  setTimeout(() => {
+    document.getElementById("replay").style.display = "block";
+  }, 1800);
+}
+
+// Surprise after 4 seconds
+timer = setTimeout(jumpscare, 4000);
+
+// A click anywhere can trigger it immediately
+document.addEventListener("click", function() {
+  if (!triggered) jumpscare();
+});
+
+function restart() {
+  triggered = false;
+
+  document.getElementById("scare").style.display = "none";
+  document.getElementById("replay").style.display = "none";
+  document.getElementById("normal").style.display = "flex";
+
+  timer = setTimeout(jumpscare, 4000);
+}
+</script>
+
+</body>
+</html>
+
