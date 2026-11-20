@@ -100,7 +100,7 @@ let audioContext;
 
 function makeScream() {
   const scream = new Audio("scream.mp3");
-  scream.volume = 10000;
+  scream.volume = 100;
   scream.play().catch(error => {
     console.log("Audio playback failed:", error);
   });
