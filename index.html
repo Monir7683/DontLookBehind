@@ -84,6 +84,7 @@ body {
   <h1>Welcome!</h1>
   <p>Hope you're having a good day.</p>
   <p>Thanks for visiting.</p>
+  <button onclick="startGame()">Start Game</button>
 </div>
 
 <div id="scare">
@@ -98,14 +99,21 @@ let triggered = false;
 let timer;
 let audioContext;
 
-function makeScream() {
-  const scream = new Audio("scream.mp3");
-  scream.volume = 1;
-  scream.play().catch(error => {
-    console.log("Audio playback failed:", error);
-  });
+let screamAudio;
+
+function prepareScream() {
+  screamAudio = new Audio("scream.mp3");
+  screamAudio.load();
 }
 
+function makeScream() {
+  if (screamAudio) {
+    screamAudio.currentTime = 0;
+    screamAudio.play().catch(error => {
+      console.log("Audio playback failed:", error);
+    });
+  }
+}
 function jumpscare() {
   if (triggered) return;
 
@@ -137,16 +145,17 @@ function restart() {
   document.getElementById("replay").style.display = "none";
   document.getElementById("normal").style.display = "flex";
 
+  clearTimeout(timer);
+}
+
+function startGame() {
+  prepareScream();
+
+  document.getElementById("normal").style.display = "none";
+
   timer = setTimeout(jumpscare, 4000);
 }
 
-// Surprise after four seconds
-timer = setTimeout(jumpscare, 4000);
-
-// Clicking anywhere triggers it immediately
-document.addEventListener("click", () => {
-  if (!triggered) jumpscare();
-});
 </script>
 
 </body>
