@@ -5,6 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Welcome</title>
 
+  #normal {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#normal h1 {
+  font-size: 36px;
+}
+
+#normal h2 {
+  font-size: 42px;
+  letter-spacing: 8px;
+}
+
+#normal input {
+  padding: 14px;
+  font-size: 20px;
+  border-radius: 10px;
+  border: none;
+  text-align: center;
+}
+
+#normal button {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 10px;
+  background: #ffcc00;
+  color: #222;
+  font-size: 18px;
+  cursor: pointer;
+}
+
 <style>
 * {
   box-sizing: border-box;
@@ -81,11 +123,17 @@ body {
 <body>
 
 <div id="normal">
-  <h1>Welcome!</h1>
-  <p>Hope you're having a good day.</p>
-  <p>Thanks for visiting.</p>
-  <button onclick="startGame()">Start Game</button>
+  <h1>🧠 Memory Challenge</h1>
+  <p>Remember the number sequence!</p>
+
+  <h2 id="sequence">4 - 8 - 2 - 9</h2>
+
+  <input id="answer" placeholder="Enter the numbers">
+  <button onclick="checkAnswer()">Submit</button>
+
+  <p id="result"></p>
 </div>
+
 
 <div id="scare">
   <img id="ghostImage" src="ghost.jpg" alt="">
@@ -151,10 +199,27 @@ function restart() {
 function startGame() {
   prepareScream();
 
-  document.getElementById("normal").style.display = "none";
+  document.getElementById("sequence").textContent = "4 - 8 - 2 - 9";
+  document.getElementById("answer").value = "";
+  document.getElementById("result").textContent = "";
 
-  timer = setTimeout(jumpscare, 4000);
+  document.getElementById("normal").style.display = "flex";
+setTimeout(() => {
+  document.getElementById("sequence").textContent = "????";
+}, 3000);
+  timer = setTimeout(jumpscare, 30000);
 }
+
+function checkAnswer() {
+  const answer = document.getElementById("answer").value;
+
+  if (answer === "4829") {
+    document.getElementById("result").textContent = "Correct! Great memory!";
+  } else {
+    document.getElementById("result").textContent = "Try again!";
+  }
+}
+
 
 </script>
 
